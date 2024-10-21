@@ -1,8 +1,8 @@
 import pytest
 import logging
-from framework.config import load_config
-from framework.db_manager import DBManager
-from framework.api_client import APIClient
+from utilities.config import load_config
+from utilities.db_manager import DatabaseManager
+from utilities.api_client import APIClient
 
 
 # Setup logger
@@ -28,7 +28,8 @@ def config():
 
 @pytest.fixture(scope="session")
 def db_manager(config):
-    db = DBManager(config)
+    db = DatabaseManager()
+    db.connect()
     yield db
     db.close()
 

@@ -29,7 +29,8 @@ class DatabaseManager:
         return logger
 
     def connect(self):
-        connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.server};DATABASE={self.database};UID={self.username};PWD={self.password};Authentication=ActiveDirectoryPassword;'
+        connection_string = (f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.server};DATABASE={self.database};'
+                             f'UID={self.username};PWD={self.password};Authentication=ActiveDirectoryPassword;')
         try:
             self.connection = pyodbc.connect(connection_string)
             self.cursor = self.connection.cursor()
