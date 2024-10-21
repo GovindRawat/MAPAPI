@@ -1,4 +1,3 @@
-# azure-pipelines.yml
 trigger:
   branches:
     include:
@@ -16,8 +15,20 @@ steps:
   - script: |
       python -m pip install --upgrade pip
       pip install -r requirements.txt
+      pip install pytest-cov
     displayName: 'Install dependencies'
 
   - script: |
-      pytest --maxfail=5 --disable-warnings
-    displayName: 'Run Pytest'
+      pytest --maxfail=5 --disable-warnings --cov=. --cov-report=xml --cov-report=html
+    displayName: 'Run Pytest and generate coverage report'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/TEST-*.xml'
+      failOnEmptyTestResults: true
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: 'cobertura'  # Use the cobertura format for coverage reports
+      codeCoverageReportPath: 'coverage.xml'  # Path to the coverage report
