@@ -49,10 +49,24 @@ class DatabaseManager:
 
     #TODO modify the query
     def fetch_user_emails(self):
-        self.cursor.execute("SELECT email FROM users")
-        return [row[0] for row in self.cursor.fetchall()]
+        try:
+            self.cursor.execute("SELECT email FROM users")
+            rows = self.cursor.fetchall()
+            if not rows:
+                raise ValueError("No user emails found.")
+            return [row[0] for row in rows]
+        except Exception as e:
+            print(f"Error fetching user emails: {e}")
+            raise
 
     #TODO modify the query
     def fetch_field_name(self):
-        self.cursor.execute("SELECT field_name FROM fields")
-        return self.cursor.fetchone()[0]
+        try:
+            self.cursor.execute("SELECT field_name FROM fields")
+            result = self.cursor.fetchone()
+            if result is None:
+                raise ValueError("No field name found.")
+            return result[0]
+        except Exception as e:
+            print(f"Error fetching field name: {e}")
+            raise
