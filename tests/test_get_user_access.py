@@ -48,5 +48,7 @@ def verify_failure_response_code(api_client, logger):
         logger.info(f"Testing user: {user_email}")
         params = {"UserEmail": user_email}
         response = api_client.get("/api/Access/GetUserAccessInfo", params=params)
+        logger.info(f"Response for {user_email}: {response.status_code}, Body: {response.text}")
         assert response.status_code == 404, f"Expected 404 for user: {user_email}, got {response.status_code}"
         logger.info(f"Response Code for {user_email}: {response.status_code}")
+
