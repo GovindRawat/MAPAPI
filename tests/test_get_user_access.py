@@ -1,4 +1,5 @@
 import pytest
+import httpx
 from pytest_bdd import scenarios, given, when, then
 
 # Load the feature scenarios
@@ -47,8 +48,18 @@ def verify_failure_response_code(api_client, logger):
     for user_email in invalid_emails:
         logger.info(f"Testing user: {user_email}")
         params = {"UserEmail": user_email}
-        response = api_client.get("/api/Access/GetUserAccessInfo", params=params)
-        logger.info(f"Response for {user_email}: {response.status_code}, Body: {response.text}")
-        assert response.status_code == 404, f"Expected 404 for user: {user_email}, got {response.status_code}"
-        logger.info(f"Response Code for {user_email}: {response.status_code}")
+        try:
+            response = api_client.get("/api/Access/GetUserAccessInfo", params=params)
+            # If no exception is raised, assert that the status code is 404
+            assert response.status_code == 404, f"Expected 404 for user: {user_email}, got {response.status_code}"
+        except httpx.HTTPStatusError as e:
+            # Log the expected error and assert that it is a 404
+            logger.info(f"Expected error for {user_email}: {e}")
+            assert e.response.status_code == 404, f"Expected 404 for user: {user_email}, got {e.response.status_code}"
+        except Exception as e:
+            logger.error(f"An unexpected error occurred for {user_email}: {str(e)}")
+            raise
+
+        logger.info(f"Response Code for {user_email}: {response.status_code if 'response' in locals() else 'N/A'}")
+
 
