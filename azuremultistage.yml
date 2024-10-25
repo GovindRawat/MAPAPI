@@ -31,7 +31,7 @@ stages:
       name: Default
     steps:
       - script: |
-          pytest --maxfail=5 --disable-warnings --cov=. --cov-report=xml --cov-report=html
+          python -m pytest --maxfail=5 --disable-warnings --cov=. --cov-report=xml --cov-report=html
         displayName: 'Run Pytest and generate coverage report'
         env:
           PYTHONHTTPSVERIFY: '0'
