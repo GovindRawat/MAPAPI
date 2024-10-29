@@ -29,8 +29,14 @@ class DatabaseManager:
         return logger
 
     def connect(self):
-        connection_string = (f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.server};DATABASE={self.database};'
-                             f'UID={self.username};PWD={self.password};Authentication=ActiveDirectoryPassword;')
+        # connection_string = (f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={self.server};DATABASE={self.database};'
+        #                      f'=Authentication=ActiveDirectoryServicePrincipal;Encrypt=yes;TrustServerCertificate=yes')
+        connection_string = (f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER=lvdms-dev.database.windows.net;'
+                             f'AUTHENTICATION=ActiveDirectoryMsi;DATABASE=LVDMS;')
+        
+        #   connection_string = (f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.server};DATABASE={self.database};'
+        #                      f'UID={self.username};PWD={self.password};Authentication=ActiveDirectoryPassword;')
+        
         try:
             self.connection = pyodbc.connect(connection_string)
             self.cursor = self.connection.cursor()
@@ -47,10 +53,9 @@ class DatabaseManager:
 
     # Add your methods for fetching data, etc. here
 
-    #TODO modify the query
     def fetch_user_emails(self):
         try:
-            self.cursor.execute("SELECT email FROM users")
+            self.cursor.execute("SELECT UM.UserEmail FROM MAP.User_Master UM JOIN MAP.User_Access UA ON UM.UserID = UA.UserID;")
             rows = self.cursor.fetchall()
             if not rows:
                 raise ValueError("No user emails found.")
@@ -59,10 +64,9 @@ class DatabaseManager:
             print(f"Error fetching user emails: {e}")
             raise
 
-    #TODO modify the query
     def fetch_field_name(self):
         try:
-            self.cursor.execute("SELECT field_name FROM fields")
+            self.cursor.execute("SELECT Field_Name FROM MAP.Field_Master")
             result = self.cursor.fetchone()
             if result is None:
                 raise ValueError("No field name found.")
