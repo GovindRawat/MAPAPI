@@ -31,9 +31,14 @@ class DatabaseManager:
     def connect(self):
         # connection_string = (f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={self.server};DATABASE={self.database};'
         #                      f'=Authentication=ActiveDirectoryServicePrincipal;Encrypt=yes;TrustServerCertificate=yes')
-        connection_string = (f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER=lvdms-dev.database.windows.net;'
-                             f'AUTHENTICATION=ActiveDirectoryMsi;DATABASE=LVDMS;')
-        
+        connection_string = (
+            'DRIVER={ODBC Driver 18 for SQL Server};'
+            'SERVER=lvdms-dev.database.windows.net;'
+            'AUTHENTICATION=ActiveDirectoryMsi;'
+            'DATABASE=LVDMS;'
+            'Encrypt=yes;TrustServerCertificate=no;'
+        )
+
         #   connection_string = (f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.server};DATABASE={self.database};'
         #                      f'UID={self.username};PWD={self.password};Authentication=ActiveDirectoryPassword;')
         
