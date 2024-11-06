@@ -1,39 +1,63 @@
 
-MAPAPI Project Documentation
+MAPAPI Project Documentation (Detailed)
 
 Overview:
-The MAPAPI project is a Python-based testing framework that utilizes Behavior-Driven Development (BDD) to validate the functionality of APIs hosted on an Azure environment. It focuses on the Field Data API and User Access API, aiming to ensure they meet specified requirements. The framework uses the `httpx` library for API requests and `pyodbc` for SQL Server database interactions, allowing seamless integration for testing and data verification.
+The MAPAPI project is a Python-based testing framework designed to validate the functionality of APIs hosted on an Azure environment. Built with a Behavior-Driven Development (BDD) approach, it primarily tests the Field Data API and User Access API, ensuring they function as expected. The framework uses several libraries, including `httpx` for HTTP requests and `pyodbc` for database connections, which together provide robust and flexible testing capabilities.
 
-Key Components:
-1. Field Data API Validation:
-   - Sends a GET request to retrieve field data and ensures the response code is 200, confirming successful data retrieval.
+Directory Structure:
 
-2. User Access API Validation:
-   - Verifies user access by sending GET requests for each user. Response codes of 200 indicate valid access, while 404s denote invalid users.
+1. `config/`:
+   - **Purpose**: Stores configuration files that contain settings required across the project.
+   - **Files**:
+     - `settings.ini`: A core configuration file where you define environment-specific settings such as API base URLs, database credentials, and other sensitive information.
 
-3. BDD-Style Testing:
-   - Utilizes `pytest-bdd` for human-readable test scenarios defined in `.feature` files. This allows easy understanding and modification of test cases.
+2. `logs/`:
+   - **Purpose**: Houses log files generated during test executions, including API responses and database interactions.
+   - **Files**:
+     - `api_logs.txt`: Logs details of each API request and response, helping in debugging and tracking.
+     - `db_logs.txt`: Logs database interactions, recording SQL queries and their outcomes.
 
-4. Configuration Management:
-   - Managed through a `settings.ini` file, where base URLs and credentials can be configured to support various environments.
+3. `tests/`:
+   - **Purpose**: Contains test files and `.feature` files used for BDD-style test cases.
+   - **Files and Subdirectories**:
+     - `test_api.py`: Python script containing the test functions for the API endpoints, following pytest conventions.
+     - `features/`: Directory storing `.feature` files for BDD tests, each representing a specific scenario.
+       - `field_data.feature`: Scenarios to validate the Field Data API.
+       - `user_access.feature`: Scenarios for testing user access control.
 
-5. Logging:
-   - Logs API requests and database operations, providing detailed records for debugging and audit trails.
+4. `utilities/`:
+   - **Purpose**: Contains utility scripts that provide helper functions to support API and database operations.
+   - **Files**:
+     - `db_helper.py`: Handles database connections and queries, especially useful for fetching test data from SQL Server.
+     - `api_helper.py`: Manages HTTP requests and response processing for APIs, keeping the test code clean and modular.
 
-6. Database Interaction:
-   - Connects to SQL Server to fetch necessary user emails and field names, enabling accurate testing against the latest data.
+Libraries Used:
 
-Project Structure:
-- `config`: Contains configuration files, primarily `settings.ini` for managing API and database settings.
-- `logs`: Stores log files for API requests and database interactions.
-- `tests`: Contains test files and `.feature` files for BDD scenarios.
-- `utilities`: Provides utility scripts for auxiliary functions, such as handling database connections.
+1. `httpx`:
+   - **Purpose**: A modern, asynchronous HTTP client library for Python, used to send HTTP requests to APIs and handle responses efficiently.
+   - **Use in Project**: Facilitates sending GET, POST, and other requests to the Field Data and User Access APIs.
+
+2. `pyodbc`:
+   - **Purpose**: A library for connecting Python with databases, specifically SQL Server in this project.
+   - **Use in Project**: Allows running SQL queries to fetch data, like user emails and field names, directly from the SQL Server database.
+
+3. `pytest`:
+   - **Purpose**: A widely-used testing framework for Python that provides a simple syntax for writing tests.
+   - **Use in Project**: Runs the test cases defined in the project and generates reports on test results.
+
+4. `pytest-bdd`:
+   - **Purpose**: An extension of pytest for Behavior-Driven Development (BDD) using `.feature` files for defining test cases.
+   - **Use in Project**: Enables writing human-readable tests and organizing them in feature files, making it easier for stakeholders to understand test scenarios.
+
+5. `pytest-html`:
+   - **Purpose**: A plugin for generating HTML reports from pytest test runs.
+   - **Use in Project**: Helps generate visual reports for each test run, allowing quick insights into test results.
 
 Getting Started:
 
 Requirements:
 - Python 3.x
-- SQL Server (cloud or local instance)
+- SQL Server (local or cloud instance)
 - Python libraries: `pytest`, `pytest-bdd`, `httpx`, `pyodbc`, `pytest-html`
 
 Setup Instructions:
@@ -46,9 +70,8 @@ Setup Instructions:
    pip install -r requirements.txt
    ```
 3. Configure `settings.ini`:
-   - Update base URLs, database credentials, and any environment-specific settings.
+   - Update API base URLs, database credentials, and any additional environment-specific settings.
 4. Run tests:
    ```
-   pytest --maxfail=5 --disable-warnings
+   pytest --maxfail=5 --disable-warnings --html=reports/test_report.html
    ```
-
