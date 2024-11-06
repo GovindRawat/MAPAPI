@@ -1,0 +1,54 @@
+
+MAPAPI Project Documentation
+
+Overview:
+The MAPAPI project is a Python-based testing framework that utilizes Behavior-Driven Development (BDD) to validate the functionality of APIs hosted on an Azure environment. It focuses on the Field Data API and User Access API, aiming to ensure they meet specified requirements. The framework uses the `httpx` library for API requests and `pyodbc` for SQL Server database interactions, allowing seamless integration for testing and data verification.
+
+Key Components:
+1. Field Data API Validation:
+   - Sends a GET request to retrieve field data and ensures the response code is 200, confirming successful data retrieval.
+
+2. User Access API Validation:
+   - Verifies user access by sending GET requests for each user. Response codes of 200 indicate valid access, while 404s denote invalid users.
+
+3. BDD-Style Testing:
+   - Utilizes `pytest-bdd` for human-readable test scenarios defined in `.feature` files. This allows easy understanding and modification of test cases.
+
+4. Configuration Management:
+   - Managed through a `settings.ini` file, where base URLs and credentials can be configured to support various environments.
+
+5. Logging:
+   - Logs API requests and database operations, providing detailed records for debugging and audit trails.
+
+6. Database Interaction:
+   - Connects to SQL Server to fetch necessary user emails and field names, enabling accurate testing against the latest data.
+
+Project Structure:
+- `config`: Contains configuration files, primarily `settings.ini` for managing API and database settings.
+- `logs`: Stores log files for API requests and database interactions.
+- `tests`: Contains test files and `.feature` files for BDD scenarios.
+- `utilities`: Provides utility scripts for auxiliary functions, such as handling database connections.
+
+Getting Started:
+
+Requirements:
+- Python 3.x
+- SQL Server (cloud or local instance)
+- Python libraries: `pytest`, `pytest-bdd`, `httpx`, `pyodbc`, `pytest-html`
+
+Setup Instructions:
+1. Clone the repository:
+   ```
+   git clone <repository-url>
+   ```
+2. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+3. Configure `settings.ini`:
+   - Update base URLs, database credentials, and any environment-specific settings.
+4. Run tests:
+   ```
+   pytest --maxfail=5 --disable-warnings
+   ```
+
