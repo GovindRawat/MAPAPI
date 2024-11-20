@@ -16,7 +16,9 @@ class DatabaseManager:
         """
         if not vault_url or not secret_name:
             raise ValueError("Both vault_url and secret_name must be provided.")
-        
+        self.load_db_config()
+        self.connection = None
+        self.cursor = None
         self.vault_url = vault_url
         self.secret_name = secret_name
         self.credentials = None
@@ -24,36 +26,50 @@ class DatabaseManager:
     def load_db_config(self):
         config = configparser.ConfigParser()
         config.read('config/settings.ini')
-
         self.server = config['database']['server']
         self.database = config['database']['database']
         self.username = config['database']['username']
         self.password = config['database']['password']
 
+    def local_connect(self):
+          connection_string = (f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.server};DATABASE={self.database};'
+                             f'UID={self.username};PWD={self.password};Authentication=ActiveDirectoryPassword;')
+        try:
+            self.connection = pyodbc.connect(connection_string)
+            self.cursor = self.connection.cursor()
+            self.logger.info('Database connection established.')
+        except Exception as e:
+            self.logger.error(f"Error connecting to the database: {e}", exc_info=True)
+
     def fetch_credentials(self):
         """
-        Fetch database credentials from Azure Key Vault.
+        Fetch database credentials from Azure Key Vault and local file.
         """
         if os.getenv('BUILD_ID') or os.getenv('SYSTEM_TEAMPROJECT'):
             logger.info("Running in Azure Pipeline")
             try:
-            logger.info("Initializing Azure Key Vault client...")
-            credential = DefaultAzureCredential()
-            client = SecretClient(vault_url=self.vault_url, credential=credential)
-            
-            logger.info(f"Fetching secret: {self.secret_name}...")
-            secret = client.get_secret(self.secret_name)
-            
-            if not secret.value:
-                raise ValueError(f"Secret '{self.secret_name}' has no value!")
-            
-            logger.info(f"Successfully retrieved secret: {self.secret_name}")
-            self.credentials = json.loads(secret.value)
-        except Exception as e:
-            logger.error(f"Error retrieving secret '{self.secret_name}': {e}")
-            raise
+                logger.info("Initializing Azure Key Vault client...")
+                credential = DefaultAzureCredential()
+                client = SecretClient(vault_url=self.vault_url, credential=credential)
+                
+                logger.info(f"Fetching secret: {self.secret_name}...")
+                secret = client.get_secret(self.secret_name)
+                
+                if not secret.value:
+                    raise ValueError(f"Secret '{self.secret_name}' has no value!")
+                
+                logger.info(f"Successfully retrieved secret: {self.secret_name}")
+                self.credentials = json.loads(secret.value)
+            except Exception as e:
+                logger.error(f"Error retrieving secret '{self.secret_name}': {e}")
+                raise
         else:
             logger.info("Running locally")
+            try:
+                local_connect()
+            except Exception as e:
+                logger.error(f"Error connecting from local credentials: {e}")
+                raise
 
         
     def build_connection_string(self):
