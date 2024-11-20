@@ -25,7 +25,9 @@ class DatabaseManager:
         """
         Fetch database credentials from Azure Key Vault.
         """
-        try:
+        if os.getenv('BUILD_ID') or os.getenv('SYSTEM_TEAMPROJECT'):
+            logger.info("Running in Azure Pipeline")
+            try:
             logger.info("Initializing Azure Key Vault client...")
             credential = DefaultAzureCredential()
             client = SecretClient(vault_url=self.vault_url, credential=credential)
@@ -41,7 +43,10 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Error retrieving secret '{self.secret_name}': {e}")
             raise
+        else:
+            logger.info("Running locally")
 
+        
     def build_connection_string(self):
         """
         Build a connection string using the fetched credentials for Microsoft SQL Server.
