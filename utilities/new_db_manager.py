@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+import pyodbc
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
@@ -43,7 +44,7 @@ class AzureDatabaseConnector:
 
     def build_connection_string(self):
         """
-        Build a connection string using the fetched credentials.
+        Build a connection string using the fetched credentials for Microsoft SQL Server.
         """
         if not self.credentials:
             raise ValueError("Credentials not fetched. Call fetch_credentials() first.")
@@ -53,15 +54,18 @@ class AzureDatabaseConnector:
             username = self.credentials.get("username")
             password = self.credentials.get("password")
             host = self.credentials.get("host")
-            port = self.credentials.get("port")
+            port = self.credentials.get("port", "1433")  # Default SQL Server port is 1433
             database_name = self.credentials.get("database_name")
             
-            if not all([username, password, host, port, database_name]):
+            if not all([username, password, host, database_name]):
                 raise ValueError("One or more required connection parameters are missing.")
             
             connection_string = (
-                f"jdbc:postgresql://{host}:{port}/{database_name}?"
-                f"user={username}&password={password}"
+                f"DRIVER={{ODBC Driver 17 for SQL Server}};"
+                f"SERVER={host},{port};"
+                f"DATABASE={database_name};"
+                f"UID={username};"
+                f"PWD={password}"
             )
             logger.info("Connection string built successfully.")
             return connection_string
@@ -71,13 +75,18 @@ class AzureDatabaseConnector:
 
     def test_connection(self, connection_string):
         """
-        Placeholder for testing the database connection.
-        Replace this with actual database connection logic.
+        Test the database connection using the provided connection string.
         """
         try:
             logger.info("Testing database connection...")
-            # Example: psycopg2.connect(dsn=connection_string)
-            logger.info(f"Successfully connected to the database using: {connection_string}")
+            with pyodbc.connect(connection_string, timeout=5) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT 1")  # Simple query to verify the connection
+                result = cursor.fetchone()
+                if result and result[0] == 1:
+                    logger.info("Successfully connected to the database.")
+                else:
+                    raise ValueError("Test query did not return expected result.")
         except Exception as e:
             logger.error(f"Error testing database connection: {e}")
             raise
