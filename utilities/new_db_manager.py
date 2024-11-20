@@ -81,7 +81,7 @@ class AzureDatabaseConnector:
         connection_string = self.build_connection_string()
         self.test_connection(connection_string)
 
-        def close(self):
+    def close(self):
         if self.cursor:
             self.cursor.close()
         if self.connection:
@@ -114,15 +114,3 @@ class AzureDatabaseConnector:
             raise
         finally:
             self.close()
-
-if __name__ == "__main__":
-    try:
-        # Read environment variables
-        vault_url = os.getenv("AZURE_KEY_VAULT_URL")
-        secret_name = os.getenv("DATABASE_SECRET_NAME")
-
-        # Initialize and run the connector
-        connector = AzureDatabaseConnector(vault_url, secret_name)
-        connector.connect()
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
