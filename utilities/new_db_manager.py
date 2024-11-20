@@ -9,7 +9,7 @@ from azure.keyvault.secrets import SecretClient
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class AzureDatabaseConnector:
+class DatabaseManager:
     def __init__(self, vault_url, secret_name):
         """
         Initialize the AzureDatabaseConnector with Key Vault details.
