@@ -21,6 +21,15 @@ class DatabaseManager:
         self.secret_name = secret_name
         self.credentials = None
 
+    def load_db_config(self):
+        config = configparser.ConfigParser()
+        config.read('config/settings.ini')
+
+        self.server = config['database']['server']
+        self.database = config['database']['database']
+        self.username = config['database']['username']
+        self.password = config['database']['password']
+
     def fetch_credentials(self):
         """
         Fetch database credentials from Azure Key Vault.
