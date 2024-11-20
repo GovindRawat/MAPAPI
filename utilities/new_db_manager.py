@@ -99,6 +99,40 @@ class AzureDatabaseConnector:
         connection_string = self.build_connection_string()
         self.test_connection(connection_string)
 
+        def close(self):
+        if self.cursor:
+            self.cursor.close()
+        if self.connection:
+            self.connection.close()
+        self.logger.info('Database connection closed.')
+
+    def fetch_user_emails(self):
+        try:
+            self.cursor.execute("SELECT UM.UserEmail FROM MAP.User_Master UM JOIN MAP.User_Access UA ON UM.UserID = "
+                                "UA.UserID;")
+            rows = self.cursor.fetchall()
+            if not rows:
+                raise ValueError("No user emails found.")
+            return [row[0] for row in rows]
+        except Exception as e:
+            self.logger.error(f"Error fetching user emails: {e}", exc_info=True)
+            raise
+        finally:
+            self.close()
+
+    def fetch_field_name(self):
+        try:
+            self.cursor.execute("SELECT Field_Name FROM MAP.Field_Master")
+            result = self.cursor.fetchone()
+            if result is None:
+                raise ValueError("No field name found.")
+            return result[0]
+        except Exception as e:
+            self.logger.error(f"Error fetching field name: {e}", exc_info=True)
+            raise
+        finally:
+            self.close()
+
 if __name__ == "__main__":
     try:
         # Read environment variables
