@@ -6,11 +6,21 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  keyVaultName: 'your-key-vault-name'
+
 steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.x'
       addToPath: true
+
+  - task: AzureKeyVault@2
+  inputs:
+    azureSubscription: 'your-service-connection-name'
+    keyVaultName: 'your-key-vault-name'
+    secretsFilter: 'db-*'
+    runAsPreJob: true
 
   - script: |
       python -m pip install --upgrade pip
@@ -34,3 +44,11 @@ steps:
     inputs:
       codeCoverageTool: 'cobertura'  # Use the cobertura format for coverage reports
       codeCoverageReportPath: 'coverage.xml'  # Path to the coverage report
+
+# Store the following secrets in Azure Key Vault:
+
+# db-server: The SQL Server name or IP.
+# db-database: The database name.
+# db-username: The username for authentication.
+# db-password: The password for authentication.
+# db-authentication: (Optional) Type of authentication (e.g., ActiveDirectoryPassword).
