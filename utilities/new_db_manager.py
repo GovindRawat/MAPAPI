@@ -73,24 +73,6 @@ class AzureDatabaseConnector:
             logger.error(f"Error building connection string: {e}")
             raise
 
-    def test_connection(self, connection_string):
-        """
-        Test the database connection using the provided connection string.
-        """
-        try:
-            logger.info("Testing database connection...")
-            with pyodbc.connect(connection_string, timeout=5) as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT 1")  # Simple query to verify the connection
-                result = cursor.fetchone()
-                if result and result[0] == 1:
-                    logger.info("Successfully connected to the database.")
-                else:
-                    raise ValueError("Test query did not return expected result.")
-        except Exception as e:
-            logger.error(f"Error testing database connection: {e}")
-            raise
-
     def connect(self):
         """
         Full process to fetch credentials, build connection string, and test the connection.
