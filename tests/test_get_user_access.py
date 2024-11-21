@@ -63,3 +63,21 @@ def verify_failure_response_code(api_client, logger):
         logger.info(f"Response Code for {user_email}: {response.status_code if 'response' in locals() else 'N/A'}")
 
 
+@then("the response code should be 404 for all invalid users")
+def new_verify_failure_response_code(api_client, logger):
+    invalid_emails = [
+        "navyasree@bftg.com",
+        "saranyaeeday@bftg.com",
+        "benjaminenglish@bftg.com",
+        "albertocanete@bftg.com",
+        "sureshnagisetti@bftg.com"
+    ]
+
+    for user_email in invalid_emails:
+        logger.info(f"Testing user: {user_email}")
+        params = {"UserEmail": user_email}
+        response = api_client.get("/api/Access/GetUserAccessInfo", params=params)
+        # Assert that the status code is 404
+        assert response.status_code == 404, f"Expected 404 for user: {user_email}, got {response.status_code}"
+        logger.info(f"Response Code for {user_email}: {response.status_code}")
+
