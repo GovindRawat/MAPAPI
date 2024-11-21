@@ -31,3 +31,12 @@ class APIClient:
         except Exception as e:
             self.logger.error(f"An error occurred: {str(e)}", exc_info=True)
             raise
+
+
+    def get_new(self, endpoint, params=None):
+    # Configure the client to verify SSL certificates
+    with httpx.Client(verify=False) as client:
+        self.logger.info(f"Sending GET request to {self.base_url}{endpoint} with params {params}")
+        response = client.get(f"{self.base_url}{endpoint}", params=params)
+        self.logger.info(f"Received response with status code {response.status_code}")
+    return response
